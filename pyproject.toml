@@ -1,0 +1,48 @@
+[project]
+name = "pyspark-builder"
+version = "0.1.0"
+description = "Visual PySpark pipeline builder — drag blocks together, get runnable code."
+requires-python = ">=3.10"
+dependencies = ["PyQt6>=6.5"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6", "pytest>=8"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["templates"]
+
+[tool.ruff.lint]
+# Sensible defaults: bugs + style + imports, without being preachy.
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes (undefined names, unused imports)
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "B",    # bugbear (likely-bugs)
+    "UP",   # pyupgrade
+    "C4",   # comprehensions
+]
+ignore = [
+    "E501",   # line-too-long handled by formatter; we don't enforce hard wrap
+    "E741",   # ambiguous variable names (df, F, T are idiomatic here)
+    "B008",   # function call in default arg (used for dataclass defaults)
+    "B904",   # raise from in re-raise — kept off to limit churn
+    "UP007",  # `Optional[X]` vs `X | None` — project uses `|` already, keep stable
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "E402"]  # assert False ok; Qt needs QApplication before project imports
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "blocks", "codegen", "helpers", "models", "pipeline",
+    "schema", "theme", "validation",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra"
+filterwarnings = ["error::UserWarning"]
